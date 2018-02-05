@@ -1,0 +1,19 @@
+development: &defaults
+  adapter: postgresql
+  encoding: unicode
+  host: localhost
+  database: mbe_development
+  username:
+  password:
+
+test:
+  <<: *defaults
+  database: mbe_test
+
+staging:
+  <<: *defaults
+  database: mbe_staging
+
+production:
+  <<: *defaults
+  database: mbe_production
