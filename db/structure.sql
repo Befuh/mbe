@@ -138,7 +138,7 @@ CREATE TABLE health_facilities (
     street text,
     city text,
     state text,
-    country_id text,
+    country text,
     created_at timestamp without time zone,
     updated_at timestamp without time zone
 );
@@ -173,7 +173,7 @@ CREATE TABLE patients (
     user_id text NOT NULL,
     city text,
     state text,
-    country_id text,
+    country text,
     created_at timestamp without time zone,
     updated_at timestamp without time zone
 );

@@ -3,7 +3,7 @@ class HealthFacility < Sequel::Model
 
   def validate
     super
-    validates_presence [:name, :city, :country_id]
+    validates_presence [:name, :city, :country]
     validates_unique :name
   end
 end

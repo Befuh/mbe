@@ -6,7 +6,7 @@ Sequel.migration do
       String :street
       String :city
       String :state
-      String :country_id
+      String :country
       DateTime :created_at
       DateTime :updated_at
     end

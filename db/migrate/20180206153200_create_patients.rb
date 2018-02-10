@@ -6,7 +6,7 @@ Sequel.migration do
       String :user_id, null: false, unique: true
       String :city
       String :state
-      String :country_id
+      String :country
       DateTime :created_at
       DateTime :updated_at
     end
