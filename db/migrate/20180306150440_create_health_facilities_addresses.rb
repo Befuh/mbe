@@ -1,10 +1,9 @@
 Sequel.migration do
   change do
-    create_table :doctors_health_facilities do
+    create_table :health_facilities_addresses do
       primary_key :id
-      foreign_key :doctor_id, :doctors
       foreign_key :health_facility_id, :health_facilities
-      DateTime :deleted_at
+      foreign_key :address_id, :addresses
     end
   end
 end

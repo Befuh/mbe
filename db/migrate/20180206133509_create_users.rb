@@ -3,7 +3,7 @@ Sequel.migration do
 
     create_table :users do
       primary_key :id
-      String :user_id, null: false, unique: true
+      String :auth_id, null: false, unique: true
       String :first_name, null: false
       String :last_name, null: false
       String :sex
