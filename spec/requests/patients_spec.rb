@@ -15,6 +15,8 @@ RSpec.describe 'Patients', type: :request do
 
   describe "GET /patients" do
     it 'returns all patients' do
+      get '/patients'
+
       expect(response).to be_success
       expect(json_response.length).to eq 1
     end
