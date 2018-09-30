@@ -72,6 +72,36 @@ ALTER SEQUENCE addresses_id_seq OWNED BY addresses.id;
 
 
 --
+-- Name: addresses_patients; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE addresses_patients (
+    id integer NOT NULL,
+    patient_id integer,
+    address_id integer
+);
+
+
+--
+-- Name: addresses_patients_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE addresses_patients_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: addresses_patients_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE addresses_patients_id_seq OWNED BY addresses_patients.id;
+
+
+--
 -- Name: admins; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -341,36 +371,6 @@ CREATE TABLE patients (
 
 
 --
--- Name: patients_addresses; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE patients_addresses (
-    id integer NOT NULL,
-    patient_id integer,
-    address_id integer
-);
-
-
---
--- Name: patients_addresses_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE patients_addresses_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: patients_addresses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE patients_addresses_id_seq OWNED BY patients_addresses.id;
-
-
---
 -- Name: patients_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -536,6 +536,13 @@ ALTER TABLE ONLY addresses ALTER COLUMN id SET DEFAULT nextval('addresses_id_seq
 
 
 --
+-- Name: addresses_patients id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY addresses_patients ALTER COLUMN id SET DEFAULT nextval('addresses_patients_id_seq'::regclass);
+
+
+--
 -- Name: admins id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -599,13 +606,6 @@ ALTER TABLE ONLY patients ALTER COLUMN id SET DEFAULT nextval('patients_id_seq':
 
 
 --
--- Name: patients_addresses id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY patients_addresses ALTER COLUMN id SET DEFAULT nextval('patients_addresses_id_seq'::regclass);
-
-
---
 -- Name: patients_pre_existing_conditions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -631,6 +631,14 @@ ALTER TABLE ONLY treatments ALTER COLUMN id SET DEFAULT nextval('treatments_id_s
 --
 
 ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
+
+
+--
+-- Name: addresses_patients addresses_patients_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY addresses_patients
+    ADD CONSTRAINT addresses_patients_pkey PRIMARY KEY (id);
 
 
 --
@@ -722,14 +730,6 @@ ALTER TABLE ONLY lab_results
 
 
 --
--- Name: patients_addresses patients_addresses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY patients_addresses
-    ADD CONSTRAINT patients_addresses_pkey PRIMARY KEY (id);
-
-
---
 -- Name: patients patients_identifier_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -802,6 +802,22 @@ ALTER TABLE ONLY users
 
 
 --
+-- Name: addresses_patients addresses_patients_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY addresses_patients
+    ADD CONSTRAINT addresses_patients_address_id_fkey FOREIGN KEY (address_id) REFERENCES addresses(id);
+
+
+--
+-- Name: addresses_patients addresses_patients_patient_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY addresses_patients
+    ADD CONSTRAINT addresses_patients_patient_id_fkey FOREIGN KEY (patient_id) REFERENCES patients(id);
+
+
+--
 -- Name: doctors_health_facilities doctors_health_facilities_doctor_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -834,22 +850,6 @@ ALTER TABLE ONLY health_facilities_addresses
 
 
 --
--- Name: patients_addresses patients_addresses_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY patients_addresses
-    ADD CONSTRAINT patients_addresses_address_id_fkey FOREIGN KEY (address_id) REFERENCES addresses(id);
-
-
---
--- Name: patients_addresses patients_addresses_patient_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY patients_addresses
-    ADD CONSTRAINT patients_addresses_patient_id_fkey FOREIGN KEY (patient_id) REFERENCES patients(id);
-
-
---
 -- Name: patients_pre_existing_conditions patients_pre_existing_conditions_patient_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -877,7 +877,7 @@ INSERT INTO "schema_migrations" ("filename") VALUES ('20180206164602_create_admi
 INSERT INTO "schema_migrations" ("filename") VALUES ('20180206203712_create_health_facilities.rb');
 INSERT INTO "schema_migrations" ("filename") VALUES ('20180206204009_create_doctors_health_facilities.rb');
 INSERT INTO "schema_migrations" ("filename") VALUES ('20180301211920_create_addresses.rb');
-INSERT INTO "schema_migrations" ("filename") VALUES ('20180306143942_create_patients_addresses.rb');
+INSERT INTO "schema_migrations" ("filename") VALUES ('20180306143942_create_addresses_patients.rb');
 INSERT INTO "schema_migrations" ("filename") VALUES ('20180306150440_create_health_facilities_addresses.rb');
 INSERT INTO "schema_migrations" ("filename") VALUES ('20180829204022_create_pre_existing_condition.rb');
 INSERT INTO "schema_migrations" ("filename") VALUES ('20180829204333_create_patients_pre_existing_condition.rb');

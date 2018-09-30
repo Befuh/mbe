@@ -1,5 +1,6 @@
 FactoryBot.define do
   factory :user do
+    id { 1 }
     auth_id { '345dssf4' }
     first_name { 'June' }
     last_name { 'Doe' }
