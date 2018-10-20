@@ -26,9 +26,9 @@ RSpec.describe 'Patients', type: :request do
       get '/patients'
 
       expect(response).to be_success
-      expect(json_response.length).to eq 1
+      expect(json_response['data'].length).to eq 1
 
-      result = json_response[0]
+      result = json_response['data'][0]
       expect(result['id']).to eq 42
       expect(result['identifier']).to eq 'foobar'
       expect(result['address']['data']).to include({ 'city' => 'Buea', 'country' => 'CM' })
@@ -36,6 +36,23 @@ RSpec.describe 'Patients', type: :request do
         to include({ 'first_name' => 'John', 'sex' => 'male', 'date_of_birth' => '1986-05-05' })
       expect(result['pre_existing_conditions']['data'].length).to eq 1
       expect(result['pre_existing_conditions']['data'][0]).to include({ 'name' => 'diabetes' })
+    end
+
+    it 'returns empty array if no patients' do
+      Address.all.map do |address|
+        address.remove_all_patients
+        address.destroy
+      end
+
+      Patient.all.map do |patient|
+        patient.remove_all_pre_existing_conditions
+        patient.destroy
+      end
+
+      get '/patients'
+
+      expect(response).to be_success
+      expect(json_response['data']).to be_empty
     end
   end
 end
