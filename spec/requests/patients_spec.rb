@@ -72,5 +72,11 @@ RSpec.describe 'Patients', type: :request do
       expect(result['pre_existing_conditions']['data'].length).to eq 1
       expect(result['pre_existing_conditions']['data'][0]).to include({ 'name' => 'diabetes' })
     end
+
+    it 'returns 404 response status if patient does not exist' do
+      get "/patients/#{identifier}45"
+
+      expect(response).to have_http_status(:missing)
+    end
   end
 end
