@@ -12,4 +12,19 @@ class Patient < Sequel::Model
     validates_unique :identifier
     validates_unique :user_id
   end
+
+  def before_validation
+    generate_identifier if new?
+
+    super
+  end
+
+  private
+
+  def generate_identifier
+    loop do
+      self.identifier = SecureRandom.hex(3).upcase
+      break if self.class.where(identifier: identifier).empty?
+    end
+  end
 end
