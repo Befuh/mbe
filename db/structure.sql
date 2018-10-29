@@ -201,6 +201,41 @@ ALTER SEQUENCE consultations_id_seq OWNED BY consultations.id;
 
 
 --
+-- Name: consultations_symptoms; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE consultations_symptoms (
+    id integer NOT NULL,
+    consultation_id integer,
+    symptom_id integer,
+    additional_info text,
+    time_from timestamp without time zone,
+    time_to timestamp without time zone,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: consultations_symptoms_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE consultations_symptoms_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: consultations_symptoms_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE consultations_symptoms_id_seq OWNED BY consultations_symptoms.id;
+
+
+--
 -- Name: doctors; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -461,6 +496,37 @@ CREATE TABLE schema_migrations (
 
 
 --
+-- Name: symptoms; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE symptoms (
+    id integer NOT NULL,
+    name text,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: symptoms_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE symptoms_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: symptoms_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE symptoms_id_seq OWNED BY symptoms.id;
+
+
+--
 -- Name: treatments; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -564,6 +630,13 @@ ALTER TABLE ONLY consultations ALTER COLUMN id SET DEFAULT nextval('consultation
 
 
 --
+-- Name: consultations_symptoms id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY consultations_symptoms ALTER COLUMN id SET DEFAULT nextval('consultations_symptoms_id_seq'::regclass);
+
+
+--
 -- Name: doctors id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -617,6 +690,13 @@ ALTER TABLE ONLY patients_pre_existing_conditions ALTER COLUMN id SET DEFAULT ne
 --
 
 ALTER TABLE ONLY pre_existing_conditions ALTER COLUMN id SET DEFAULT nextval('pre_existing_conditions_id_seq'::regclass);
+
+
+--
+-- Name: symptoms id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY symptoms ALTER COLUMN id SET DEFAULT nextval('symptoms_id_seq'::regclass);
 
 
 --
@@ -679,6 +759,14 @@ ALTER TABLE ONLY clinical_observations
 
 ALTER TABLE ONLY consultations
     ADD CONSTRAINT consultations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: consultations_symptoms consultations_symptoms_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY consultations_symptoms
+    ADD CONSTRAINT consultations_symptoms_pkey PRIMARY KEY (id);
 
 
 --
@@ -778,6 +866,14 @@ ALTER TABLE ONLY schema_migrations
 
 
 --
+-- Name: symptoms symptoms_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY symptoms
+    ADD CONSTRAINT symptoms_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: treatments treatments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -815,6 +911,22 @@ ALTER TABLE ONLY addresses_patients
 
 ALTER TABLE ONLY addresses_patients
     ADD CONSTRAINT addresses_patients_patient_id_fkey FOREIGN KEY (patient_id) REFERENCES patients(id);
+
+
+--
+-- Name: consultations_symptoms consultations_symptoms_consultation_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY consultations_symptoms
+    ADD CONSTRAINT consultations_symptoms_consultation_id_fkey FOREIGN KEY (consultation_id) REFERENCES consultations(id);
+
+
+--
+-- Name: consultations_symptoms consultations_symptoms_symptom_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY consultations_symptoms
+    ADD CONSTRAINT consultations_symptoms_symptom_id_fkey FOREIGN KEY (symptom_id) REFERENCES symptoms(id);
 
 
 --
@@ -879,9 +991,11 @@ INSERT INTO "schema_migrations" ("filename") VALUES ('20180206204009_create_doct
 INSERT INTO "schema_migrations" ("filename") VALUES ('20180301211920_create_addresses.rb');
 INSERT INTO "schema_migrations" ("filename") VALUES ('20180306143942_create_addresses_patients.rb');
 INSERT INTO "schema_migrations" ("filename") VALUES ('20180306150440_create_health_facilities_addresses.rb');
-INSERT INTO "schema_migrations" ("filename") VALUES ('20180829204022_create_pre_existing_condition.rb');
-INSERT INTO "schema_migrations" ("filename") VALUES ('20180829204333_create_patients_pre_existing_condition.rb');
+INSERT INTO "schema_migrations" ("filename") VALUES ('20180829204022_create_pre_existing_conditions.rb');
+INSERT INTO "schema_migrations" ("filename") VALUES ('20180829204333_create_patients_pre_existing_conditions.rb');
 INSERT INTO "schema_migrations" ("filename") VALUES ('20180829205636_create_consultations.rb');
 INSERT INTO "schema_migrations" ("filename") VALUES ('20180829205932_create_clinical_observations.rb');
 INSERT INTO "schema_migrations" ("filename") VALUES ('20180829210230_create_lab_results.rb');
 INSERT INTO "schema_migrations" ("filename") VALUES ('20180829210356_create_treatments.rb');
+INSERT INTO "schema_migrations" ("filename") VALUES ('20181029195833_create_symptoms.rb');
+INSERT INTO "schema_migrations" ("filename") VALUES ('20181029200301_create_consultations_symptoms.rb');
