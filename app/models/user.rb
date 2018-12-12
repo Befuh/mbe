@@ -1,5 +1,6 @@
 class User < Sequel::Model
   one_to_one :patient
+  one_to_one :doctor
 
   def validate
     super
