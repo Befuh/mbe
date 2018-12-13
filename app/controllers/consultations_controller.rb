@@ -5,7 +5,12 @@ class ConsultationsController < ApplicationController
     consultations = Consultation.eager(
       :patient, :doctor, :health_facility).where(patient_id: @patient.id)
 
-    render json: { data: consultations.map { |cons| ConsultationSerializer.new(cons).serialize }}
+    render json: { data: consultations.map { |cons| ConsultationIndexSerializer.new(cons).serialize }}
+  end
+
+  def show
+    consultation = Consultation[patient_id: @patient.id, id: params[:id]]
+    render json: { data: ConsultationSerializer.new(consultation).serialize }
   end
 
   private

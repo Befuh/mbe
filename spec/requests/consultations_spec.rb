@@ -7,17 +7,17 @@ RSpec.describe 'Consultations', type: :request do
   let!(:doctor) { FactoryBot.create(:doctor, id: 4002, user: user) }
   let!(:health_facility) { FactoryBot.create(:health_facility, name: 'Biaka') }
 
-  describe 'GET /consultations' do
-    before do
-      FactoryBot.create(
-        :consultation,
-        patient: patient,
-        doctor: doctor,
-        health_facility: health_facility,
-        timestamp: timestamp)
-    end
+  before do
+    FactoryBot.create(
+      :consultation,
+      patient: patient,
+      doctor: doctor,
+      health_facility: health_facility,
+      timestamp: timestamp)
+  end
 
-    it 'returns all consultations' do
+  describe 'GET /patients/:patient_identifer/consultations' do
+    it 'returns all consultations for given patient' do
       get "/patients/#{patient.identifier}/consultations"
 
       expect(response).to be_success
@@ -29,6 +29,27 @@ RSpec.describe 'Consultations', type: :request do
       expect(result['doctor']['data']).
         to include({ 'first_name' => 'Foo', 'last_name' => 'Bar' })
       expect(result['health_facility']['data']).to include({ 'name' => 'Biaka'})
+    end
+
+    it 'returns empty array if no consultations for given patient' do
+      Consultation.where(patient_id: patient.id).destroy
+
+      get "/patients/#{patient.identifier}/consultations"
+
+      expect(response).to be_success
+      expect(json_response['data']).to be_empty
+    end
+  end
+
+  describe 'GET /patients/:patient_identifer/consultations/:id' do
+    let(:consultation) { Consultation.first }
+
+    it 'returnsconsultation for given patient and id' do
+      get "/patients/#{patient.identifier}/consultations/#{consultation.id}"
+
+      expect(response).to be_success
+      result = json_response['data']
+      expect(result['timestamp']).to eq timestamp.iso8601
     end
   end
 end
