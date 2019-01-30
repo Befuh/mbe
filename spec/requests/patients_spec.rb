@@ -53,6 +53,28 @@ RSpec.describe 'Patients', type: :request do
       expect(response).to be_success
       expect(json_response['data']).to be_empty
     end
+
+    describe 'For search' do
+      before do
+        other_user = FactoryBot.create(:user, id: 1524, first_name: 'Foobar', auth_id: '343eg5')
+        FactoryBot.create(:patient, user: other_user, id: 65433)
+      end
+
+      it 'returns only result for patient name' do
+        get '/patients?first_name=Foobar'
+
+        expect(response).to be_success
+        expect(json_response['data'].length).to eq 1
+        expect(json_response['data'][0]['id']).to eq 65433
+      end
+
+      it 'returns only result for patient name and sex' do
+        get '/patients?first_name=Foobar&sex=male'
+
+        expect(response).to be_success
+        expect(json_response['data'].length).to eq 0
+      end
+    end
   end
 
   describe 'GET /patients/:identifier' do

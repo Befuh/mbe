@@ -2,7 +2,7 @@ class PatientsController < ApplicationController
   before_action :set_patient, only: [:show]
 
   def index
-    patients = Patient.eager(:user, :address, :pre_existing_conditions).all
+    patients = query_patients.all
     render json: { data: patients.map { |patient| PatientSerializer.new(patient).serialize }}
   end
 
@@ -58,5 +58,22 @@ class PatientsController < ApplicationController
     return unless create_patient_params[:address]
 
     Address.create(create_patient_params[:address])
+  end
+
+  def query_patients
+    query = Patient.eager_graph(:user, :address, :pre_existing_conditions)
+
+    query = sequel_ilike(query, :first_name) if params[:first_name].present?
+
+    query = sequel_ilike(query, :last_name) if params[:last_name].present?
+
+    query = query.where(sex: params[:sex]) if params[:sex].present?
+
+    query
+  end
+
+  def sequel_ilike(query, field)
+    value = "%#{params[field]}%"
+    query.where { Sequel.ilike(:first_name, value) }
   end
 end
