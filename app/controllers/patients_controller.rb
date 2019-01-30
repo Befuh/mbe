@@ -74,6 +74,6 @@ class PatientsController < ApplicationController
 
   def sequel_ilike(query, field)
     value = "%#{params[field]}%"
-    query.where { Sequel.ilike(:first_name, value) }
+    query.where { Sequel.ilike(field, value) }
   end
 end
