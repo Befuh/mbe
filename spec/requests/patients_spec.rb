@@ -74,6 +74,15 @@ RSpec.describe 'Patients', type: :request do
         expect(response).to be_success
         expect(json_response['data'].length).to eq 0
       end
+
+      it 'returns only result for patient identifier' do
+        patient = Patient.first
+        get "/patients?identifier=#{patient.identifier}"
+
+        expect(response).to be_success
+        expect(json_response['data'].length).to eq 1
+        expect(json_response['data'][0]['identifier']).to eq patient.identifier
+      end
     end
   end
 

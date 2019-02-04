@@ -67,6 +67,8 @@ class PatientsController < ApplicationController
 
     query = sequel_ilike(query, :last_name) if params[:last_name].present?
 
+    query = query.where(identifier: params[:identifier]) if params[:identifier].present?
+
     query = query.where(sex: params[:sex]) if params[:sex].present?
 
     query
