@@ -15,15 +15,11 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     FactoryBot.find_definitions
+    DatabaseRewinder.clean_all
   end
 
-  config.after(:each) do |example|
-    Sequel.application_timezone = nil
-    Sequel.typecast_timezone = nil
-  end
-
-  config.around(:each) do |example|
-    Sequel::Model.db.transaction(rollback: :always, auto_savepoint: true) { example.run }
+  config.after(:each) do
+    DatabaseRewinder.clean
   end
 
   FactoryBot.define do

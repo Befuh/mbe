@@ -32,7 +32,7 @@ RSpec.describe 'Consultations', type: :request do
     end
 
     it 'returns empty array if no consultations for given patient' do
-      Consultation.where(patient_id: patient.id).destroy
+      Consultation.where(patient_id: patient.id).destroy_all
 
       get "/patients/#{patient.identifier}/consultations"
 

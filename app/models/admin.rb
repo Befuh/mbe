@@ -1,7 +1,4 @@
-class Admin < Sequel::Model
-  def validate
-    super
-    validates_presence [:user_id]
-    validates_unique :user_id
-  end
+class Admin < ApplicationRecord
+  validates :user_id, presence: true
+  validates :user_id, uniqueness: true
 end

@@ -2,8 +2,8 @@ class PatientsController < ApplicationController
   before_action :set_patient, only: [:show]
 
   def index
-    patients = query_patients.all
-    render json: { data: patients.map { |patient| PatientSerializer.new(patient).serialize }}
+    patients = query_patients
+    render json: { data: patients.map { |pat| PatientSerializer.new(pat).serialize }}
   end
 
   def show
@@ -13,19 +13,23 @@ class PatientsController < ApplicationController
   def create
     user = create_user
 
-    render json: { error: 'User must be provided' }, status: :bad_request and return unless user
-
-    patient = Patient.create(user_id: user.id)
-    patient.address = create_address
-
-    if create_patient_params[:pre_existing_conditions].present?
-      create_patient_params[:pre_existing_conditions].map do |pre_existing_condition_id|
-        pre_existing_condition = PreExistingCondition[id: pre_existing_condition_id.to_i]
-        patient.add_pre_existing_condition(pre_existing_condition) if pre_existing_condition
-      end
+    unless user
+      render json: { error: 'User must be provided' }, status: :bad_request and return
     end
 
-    patient.save
+    attributes = { user_id: user.id }
+
+    if patient_params[:pre_existing_conditions].present?
+      attributes.merge!(
+        pre_existing_conditions_attributes: patient_params[:pre_existing_conditions])
+    end
+
+    patient = Patient.create!(attributes)
+
+    if patient_params[:address].present?
+      address = Address.create!(patient_params[:address])
+      patient.create_patient_address!(address_id: address.id)
+    end
 
     render json: { data: PatientSerializer.new(patient).serialize }
   end
@@ -33,35 +37,27 @@ class PatientsController < ApplicationController
   private
 
   def set_patient
-    @patient = Patient[identifier: params[:identifier]]
-
-    render json: { error: 'Patient not found' }, status: :not_found unless @patient
+    @patient = Patient.find_by!(identifier: params[:identifier])
   end
 
-  def create_patient_params
+  def patient_params
     params.require(:patient).permit(
-      user: [:first_name, :last_name, :sex, :date_of_birth],
+      user: [:first_name, :last_name, :gender, :date_of_birth],
       address: [:street, :house_number, :city, :zip_code, :state, :country, :phone],
-      pre_existing_conditions: []
+      pre_existing_conditions: [:disease_id]
     )
   end
 
   def create_user
-    user_params = create_patient_params[:user]
+    user_params = patient_params[:user]
 
     return unless user_params
 
-    User.create(user_params.merge(auth_id: SecureRandom.hex(6)))
-  end
-
-  def create_address
-    return unless create_patient_params[:address]
-
-    Address.create(create_patient_params[:address])
+    User.create!(user_params.merge(auth_id: SecureRandom.hex(6)))
   end
 
   def query_patients
-    query = Patient.eager_graph(:user, :address, :pre_existing_conditions)
+    query = Patient.left_outer_joins(:user, :address, :pre_existing_conditions)
 
     query = sequel_ilike(query, :first_name) if params[:first_name].present?
 
@@ -69,13 +65,12 @@ class PatientsController < ApplicationController
 
     query = query.where(identifier: params[:identifier]) if params[:identifier].present?
 
-    query = query.where(sex: params[:sex]) if params[:sex].present?
+    query = query.where('users.gender = ?', params[:gender]) if params[:gender].present?
 
     query
   end
 
   def sequel_ilike(query, field)
-    value = "%#{params[field]}%"
-    query.where { Sequel.ilike(field, value) }
+    query.where("users.#{field} ILIKE ?", "%#{params[field]}%")
   end
 end

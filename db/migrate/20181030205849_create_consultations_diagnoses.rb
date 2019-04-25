@@ -1,9 +1,9 @@
-Sequel.migration do
-  change do
-    create_table :consultations_diagnoses do
-      primary_key :id
-      foreign_key :consultation_id, :consultations
-      foreign_key :diagnosis_id, :diagnoses
+class CreateConsultationsDiagnoses < ActiveRecord::Migration[5.1]
+  def change
+    create_table :consultations_diagnoses, id: false do |t|
+      t.belongs_to :consultation, index: true
+      t.belongs_to :diagnosis, index: true
     end
   end
 end
+

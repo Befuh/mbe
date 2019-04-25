@@ -1,10 +1,10 @@
-Sequel.migration do
-  change do
-    create_table :symptoms do
-      primary_key :id
-      String :name
-      DateTime :created_at
-      DateTime :updated_at
+class CreateSymptoms < ActiveRecord::Migration[5.1]
+  def change
+    create_table :symptoms do |t|
+      t.string :name
+
+      t.timestamps
     end
   end
 end
+

@@ -1,13 +1,12 @@
-Sequel.migration do
-  change do
-    create_table :lab_results do
-      primary_key :id
-      Integer :consultation_id
-      String :category
-      String :value
-      String :unit
-      DateTime :created_at
-      DateTime :updated_at
+class CreateLabResults < ActiveRecord::Migration[5.1]
+  def change
+    create_table :lab_results do |t|
+      t.integer :consultation_id
+      t.string :category
+      t.string :value
+      t.string :unit
+
+      t.timestamps
     end
   end
 end

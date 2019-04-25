@@ -1,11 +1,10 @@
-Sequel.migration do
-  change do
-    create_table :patients do
-      primary_key :id
-      String :identifier, null: false, unique: true
-      Integer :user_id, null: false, unique: true
-      DateTime :created_at
-      DateTime :updated_at
+class CreatePatients < ActiveRecord::Migration[5.1]
+  def change
+    create_table :patients do |t|
+      t.string :identifier, null: false
+      t.integer :user_id, null: false
+
+      t.timestamps
     end
   end
 end

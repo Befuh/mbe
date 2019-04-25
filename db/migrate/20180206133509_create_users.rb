@@ -1,16 +1,13 @@
-Sequel.migration do
-  change do
+class CreateUsers < ActiveRecord::Migration[5.1]
+  def change
+    create_table :users do |t|
+      t.string :auth_id, null: false
+      t.string :first_name, null: false
+      t.string :last_name, null: false
+      t.string :gender
+      t.date :date_of_birth
 
-    create_table :users do
-      primary_key :id
-      String :auth_id, null: false, unique: true
-      String :first_name, null: false
-      String :last_name, null: false
-      String :sex
-      Date :date_of_birth
-      DateTime :created_at
-      DateTime :updated_at
+      t.timestamps
     end
-
   end
 end

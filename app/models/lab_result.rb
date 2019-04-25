@@ -1,8 +1,5 @@
-class LabResult < Sequel::Model
-  many_to_one :consultation
+class LabResult < ApplicationRecord
+  belongs_to :consultation
 
-  def validate
-    super
-    validates_presence [:consultation_id, :category]
-  end
+  validates :consultation_id, :category, presence: true
 end

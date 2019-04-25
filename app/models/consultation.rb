@@ -1,15 +1,13 @@
-class Consultation < Sequel::Model
-  many_to_one :patient
-  many_to_one :doctor
-  many_to_one :health_facility
-  many_to_many :symptoms
-  many_to_many :diagnoses
-  one_to_many :clinical_observations
-  one_to_many :lab_results
-  one_to_many :treatments
+class Consultation < ApplicationRecord
+  belongs_to :patient
+  belongs_to :doctor
+  belongs_to :health_facility
+  has_many :anamneses
+  has_many :symptoms, through: :anamneses
+  has_and_belongs_to_many :diagnoses
+  has_many :clinical_observations
+  has_many :lab_results
+  has_many :treatments
 
-  def validate
-    super
-    validates_presence [:patient_id, :doctor_id, :health_facility_id, :timestamp]
-  end
+  validates :patient_id, :doctor_id, :health_facility_id, :timestamp, presence: true
 end

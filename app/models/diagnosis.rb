@@ -1,3 +1,3 @@
-class Diagnosis < Sequel::Model
-  many_to_many :consultations
+class Diagnosis < ApplicationRecord
+  has_and_belongs_to_many :consultations
 end

@@ -1,10 +1,9 @@
-Sequel.migration do
-  change do
-    create_table :health_facilities do
-      primary_key :id
-      String :name
-      DateTime :created_at
-      DateTime :updated_at
+class CreateHealthFacilities < ActiveRecord::Migration[5.1]
+  def change
+    create_table :health_facilities do |t|
+      t.string :name
+
+      t.timestamps
     end
   end
 end

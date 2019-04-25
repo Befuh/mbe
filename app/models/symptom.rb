@@ -1,3 +1,4 @@
-class Symptom < Sequel::Model
-  many_to_many :consultations
+class Symptom < ApplicationRecord
+  has_many :anamneses
+  has_many :consultations, through: :anamneses
 end

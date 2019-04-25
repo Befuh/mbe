@@ -28,7 +28,7 @@ class PatientSerializer
       first_name: user.first_name,
       last_name: user.last_name,
       date_of_birth: user.date_of_birth ? user.date_of_birth.strftime('%Y-%m-%d') : nil,
-      sex: user.sex
+      gender: user.gender
     }
   end
 
@@ -48,7 +48,7 @@ class PatientSerializer
 
   def pre_existing_conditions
     patient.pre_existing_conditions.map do |pec|
-      { id: pec.id, name: pec.name }
+      { id: pec.id, name: pec.disease.name }
     end
   end
 end

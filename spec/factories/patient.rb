@@ -6,7 +6,8 @@ FactoryBot.define do
   trait :with_address_and_pre_existing_conditions do
     after(:create) do |patient|
       patient.address = create(:address)
-      patient.add_pre_existing_condition(create(:pre_existing_condition))
+      disease = create(:disease)
+      patient.pre_existing_conditions << create(:pre_existing_condition, disease: disease)
     end
   end
 end

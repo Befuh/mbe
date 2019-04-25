@@ -1,10 +1,8 @@
-class HealthFacility < Sequel::Model
-  many_to_many :doctors
-  many_to_many :addresses
+class HealthFacility < ApplicationRecord
+  has_many :consultations
+  has_and_belongs_to_many :doctors
+  has_and_belongs_to_many :addresses
 
-  def validate
-    super
-    validates_presence [:name]
-    validates_unique :name
-  end
+  validates :name, presence: true
+  validates :name, uniqueness: true
 end

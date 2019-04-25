@@ -1,16 +1,16 @@
-Sequel.migration do
-  change do
-    create_table :addresses do
-      primary_key :id
-      String :street
-      String :house_number
-      String :city
-      String :zip_code
-      String :state
-      String :country
-      String :phone
-      DateTime :created_at
-      DateTime :updated_at
+class CreateAddresses < ActiveRecord::Migration[5.1]
+  def change
+    create_table :addresses do |t|
+      t.string :street
+      t.string :house_number
+      t.string :city
+      t.string :zip_code
+      t.string :state
+      t.string :country
+      t.string :phone
+
+      t.timestamps
     end
   end
 end
+

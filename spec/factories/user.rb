@@ -1,10 +1,9 @@
 FactoryBot.define do
   factory :user do
-    id { 1 }
     auth_id { '345dssf4' }
     first_name { 'June' }
     last_name { 'Doe' }
-    sex { 'female' }
+    gender { 'female' }
     date_of_birth { Date.new(1999, 1, 1) }
   end
 end

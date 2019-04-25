@@ -1,13 +1,12 @@
-Sequel.migration do
-  change do
-    create_table :consultations do
-      primary_key :id
-      DateTime :timestamp
-      Integer :patient_id
-      Integer :doctor_id
-      Integer :health_facility_id
-      DateTime :created_at
-      DateTime :updated_at
+class CreateConsultations < ActiveRecord::Migration[5.1]
+  def change
+    create_table :consultations do |t|
+      t.integer :patient_id
+      t.integer :doctor_id
+      t.integer :health_facility_id
+      t.datetime :timestamp
+
+      t.timestamps
     end
   end
 end

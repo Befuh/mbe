@@ -1,12 +1,11 @@
-Sequel.migration do
-  change do
-    create_table :treatments do
-      primary_key :id
-      Integer :consultation_id
-      String :type
-      Text :description
-      DateTime :created_at
-      DateTime :updated_at
+class CreateTreatments < ActiveRecord::Migration[5.1]
+  def change
+    create_table :treatments do |t|
+      t.integer :consultation_id
+      t.string :type
+      t.text :description
+
+      t.timestamps
     end
   end
 end

@@ -1,10 +1,8 @@
-class Doctor < Sequel::Model
-  many_to_one :user
-  many_to_many :health_facilities
+class Doctor < ApplicationRecord
+  belongs_to :user
+  has_many :consultations
+  has_and_belongs_to_many :health_facilities
 
-  def validate
-    super
-    validates_presence [:user_id]
-    validates_unique :user_id
-  end
+  validates :user_id, presence: true
+  validates :user_id, uniqueness: true
 end

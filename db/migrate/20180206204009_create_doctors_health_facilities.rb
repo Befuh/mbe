@@ -1,10 +1,8 @@
-Sequel.migration do
-  change do
-    create_table :doctors_health_facilities do
-      primary_key :id
-      foreign_key :doctor_id, :doctors
-      foreign_key :health_facility_id, :health_facilities
-      DateTime :deleted_at
+class CreateDoctorsHealthFacilities < ActiveRecord::Migration[5.1]
+  def change
+    create_table :doctors_health_facilities, id: false do |t|
+      t.belongs_to :doctor, index: true
+      t.belongs_to :health_facility, index: true
     end
   end
 end

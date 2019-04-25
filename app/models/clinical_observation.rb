@@ -1,8 +1,5 @@
-class ClinicalObservation < Sequel::Model
-  many_to_one :consultation
+class ClinicalObservation < ApplicationRecord
+  belongs_to :consultation
 
-  def validate
-    super
-    validates_presence [:consultation_id, :exam]
-  end
+  validates :consultation_id, :exam, presence: true
 end

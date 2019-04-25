@@ -1,30 +1,21 @@
-class Patient < Sequel::Model
-  one_through_one :address
+class Patient < ApplicationRecord
+  belongs_to :user
+  has_one :patient_address
+  has_one :address, through: :patient_address
+  has_many :pre_existing_conditions
+  accepts_nested_attributes_for :pre_existing_conditions, allow_destroy: true
 
-  many_to_one :user
+  validates :identifier, :user_id, presence: true
+  validates :identifier, :user_id, uniqueness: true
 
-  many_to_many :pre_existing_conditions
-  add_association_dependencies pre_existing_conditions: :nullify
-
-  def validate
-    super
-    validates_presence [:identifier, :user_id]
-    validates_unique :identifier
-    validates_unique :user_id
-  end
-
-  def before_validation
-    generate_identifier if new?
-
-    super
-  end
+  before_validation :generate_identifier, on: :create
 
   private
 
   def generate_identifier
     loop do
       self.identifier = SecureRandom.hex(3).upcase
-      break if self.class.where(identifier: identifier).empty?
+      break if self.class.find_by(identifier: identifier).blank?
     end
   end
 end

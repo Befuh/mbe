@@ -4,9 +4,8 @@ RSpec.describe 'Patients', type: :request do
   let!(:user) do
     FactoryBot.create(
       :user,
-      id: 1,
       first_name: 'John',
-      sex: 'male',
+      gender: 'male',
       date_of_birth: Date.new(1986, 5, 5)
     )
   end
@@ -15,8 +14,7 @@ RSpec.describe 'Patients', type: :request do
     FactoryBot.create(
       :patient,
       :with_address_and_pre_existing_conditions,
-      user: user,
-      id: 42
+      user: user
     )
   end
 
@@ -28,25 +26,18 @@ RSpec.describe 'Patients', type: :request do
       expect(json_response['data'].length).to eq 1
 
       result = json_response['data'][0]
-      expect(result['id']).to eq 42
+      expect(result['id']).to_not be_nil
       expect(result['identifier']).to_not be_nil
       expect(result['address']['data']).to include({ 'city' => 'Buea', 'country' => 'CM' })
       expect(result['user']['data']).
-        to include({ 'first_name' => 'John', 'sex' => 'male', 'date_of_birth' => '1986-05-05' })
+        to include({ 'first_name' => 'John', 'gender' => 'male', 'date_of_birth' => '1986-05-05' })
       expect(result['pre_existing_conditions']['data'].length).to eq 1
       expect(result['pre_existing_conditions']['data'][0]).to include({ 'name' => 'diabetes' })
     end
 
     it 'returns empty array if no patients' do
-      Address.all.map do |address|
-        address.remove_all_patients
-        address.destroy
-      end
-
-      Patient.all.map do |patient|
-        patient.remove_all_pre_existing_conditions
-        patient.destroy
-      end
+      Address.destroy_all
+      Patient.destroy_all
 
       get '/patients'
 
@@ -68,8 +59,8 @@ RSpec.describe 'Patients', type: :request do
         expect(json_response['data'][0]['id']).to eq 65433
       end
 
-      it 'returns only result for patient name and sex' do
-        get '/patients?first_name=Foobar&sex=male'
+      it 'returns only result for patient name and gender' do
+        get '/patients?first_name=Foobar&gender=male'
 
         expect(response).to be_success
         expect(json_response['data'].length).to eq 0
@@ -88,17 +79,17 @@ RSpec.describe 'Patients', type: :request do
 
   describe 'GET /patients/:identifier' do
     it 'returns patient for given identifier' do
-      identifier = Patient.first.identifier
+      patient = Patient.first
 
-      get "/patients/#{identifier}"
+      get "/patients/#{patient.identifier}"
 
       expect(response).to be_success
       result = json_response['data']
-      expect(result['id']).to eq 42
-      expect(result['identifier']).to eq identifier
+      expect(result['id']).to eq patient.id
+      expect(result['identifier']).to eq patient.identifier
       expect(result['address']['data']).to include({ 'city' => 'Buea', 'country' => 'CM' })
       expect(result['user']['data']).
-        to include({ 'first_name' => 'John', 'sex' => 'male', 'date_of_birth' => '1986-05-05' })
+        to include({ 'first_name' => 'John', 'gender' => 'male', 'date_of_birth' => '1986-05-05' })
       expect(result['pre_existing_conditions']['data'].length).to eq 1
       expect(result['pre_existing_conditions']['data'][0]).to include({ 'name' => 'diabetes' })
     end
@@ -116,10 +107,11 @@ RSpec.describe 'Patients', type: :request do
     let(:new_patient) do
       new_patient = {
         user: {
-          first_name: 'Eposi', last_name: 'Buh', sex: 'female', date_of_birth: Date.new(1990, 1, 6)
+          first_name: 'Eposi', last_name: 'Buh',
+          gender: 'female', date_of_birth: Date.new(1990, 1, 6)
         },
         address: { street: 'Malingo', city: 'Buea', country: 'CM' },
-        pre_existing_conditions: [PreExistingCondition.first.id]
+        pre_existing_conditions: [{ disease_id: Disease.first.id }]
       }
     end
 
@@ -134,7 +126,7 @@ RSpec.describe 'Patients', type: :request do
       expect(result['user']['data']).
         to include({
           'first_name' => 'Eposi', 'last_name' => 'Buh',
-          'sex' => 'female', 'date_of_birth' => '1990-01-06'
+          'gender' => 'female', 'date_of_birth' => '1990-01-06'
         })
       expect(result['pre_existing_conditions']['data'].length).to eq 1
       expect(result['pre_existing_conditions']['data'][0]).to include({ 'name' => 'diabetes' })

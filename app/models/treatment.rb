@@ -1,8 +1,5 @@
-class Treatment < Sequel::Model
-  many_to_one :consultation
+class Treatment < ApplicationRecord
+  belongs_to :consultation
 
-  def validate
-    super
-    validates_presence [:consultation_id, :type, :description]
-  end
+  validates :consultation_id, :type, :description, presence: true
 end
