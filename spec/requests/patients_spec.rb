@@ -105,7 +105,7 @@ RSpec.describe 'Patients', type: :request do
 
   describe 'POST /patients' do
     let(:new_patient) do
-      new_patient = {
+      {
         user: {
           first_name: 'Eposi', last_name: 'Buh',
           gender: 'female', date_of_birth: Date.new(1990, 1, 6)
