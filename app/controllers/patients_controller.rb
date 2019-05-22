@@ -14,7 +14,7 @@ class PatientsController < ApplicationController
     user = create_user
 
     unless user
-      render json: { error: 'User must be provided' }, status: :bad_request and return
+      render_bad_request(OpenStruct.new(message: 'User must be provided')) and return
     end
 
     attributes = { user_id: user.id }

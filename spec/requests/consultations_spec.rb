@@ -89,7 +89,7 @@ RSpec.describe 'Consultations', type: :request do
         to include({ 'time_from' => time_from.iso8601 })
     end
 
-    it 'returns bad request response if patient does not exists' do
+    it 'returns not found response if patient does not exists' do
       post(
         "/patients/#{patient.identifier}345/consultations",
         params: with_required_params(consultation: new_consultation))

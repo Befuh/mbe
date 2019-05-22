@@ -15,6 +15,10 @@ class ConsultationsController < ApplicationController
   end
 
   def create
+    if @patient.id != consultation_params[:patient_id].to_i
+      render_bad_request(OpenStruct.new(message: 'Mismatch id')) and return
+    end
+
     attributes = consultation_params.slice(
       :timestamp, :patient_id, :doctor_id, :health_facility_id)
 
