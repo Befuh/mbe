@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Consultations', type: :request do
   let(:timestamp) { DateTime.new(2018, 12, 5).utc }
+  let(:time_from) { DateTime.new(2018, 12, 5, 12, 0, 0).utc }
   let!(:user) { FactoryBot.create(:user, first_name: 'Foo', last_name: 'Bar') }
   let!(:patient) { FactoryBot.create(:patient, user: user) }
   let!(:doctor) { FactoryBot.create(:doctor, user: user) }
@@ -59,10 +60,59 @@ RSpec.describe 'Consultations', type: :request do
       result = json_response['data']
       expect(result['timestamp']).to eq timestamp.iso8601
     end
+
+    it 'returns no found error if consultation does not exist' do
+      get "/patients/#{patient.identifier}/consultations/#{consultation.id}45489"
+
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
+  describe 'PUT /patients/:patient_identifer/consultations/:id' do
+    let(:consultation) do
+      FactoryBot.create(
+        :consultation,
+        patient: patient,
+        doctor: doctor,
+        health_facility: health_facility,
+        timestamp: timestamp)
+    end
+
+    it 'returns updated consultation for given patient and id' do
+      cons = {
+        patient_id: patient.id,
+        anamneses: [{ symptom_id: symptom.id, time_from: time_from }]
+      }
+
+      put(
+        "/patients/#{patient.identifier}/consultations/#{consultation.id}",
+        params: with_required_params(consultation: cons))
+
+      expect(response).to be_success
+      result = json_response['data']
+      expect(result['anamneses']['data'].length).to eq 1
+      expect(result['anamneses']['data'][0]).
+        to include({ 'time_from' => time_from.iso8601 })
+    end
+
+    it 'returns no found error if consultation does not exist' do
+      put(
+        "/patients/#{patient.identifier}/consultations/#{consultation.id}45489",
+        params: with_required_params(consultation: { patient_id: patient.id }))
+
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it 'returns bad request response if patient id mismatch' do
+      put(
+        "/patients/#{patient.identifier}/consultations/#{consultation.id}",
+        params: with_required_params(consultation: { patient_id: 'foo_bar' }))
+
+      expect(response).to have_http_status(:bad_request)
+    end
   end
 
   describe 'POST /patients/:patient_identifer/consultations' do
-    let(:time_from) { DateTime.new(2018, 12, 5, 12, 0, 0).utc }
     let(:new_consultation) do
       {
         patient_id: patient.id,
@@ -95,6 +145,15 @@ RSpec.describe 'Consultations', type: :request do
         params: with_required_params(consultation: new_consultation))
 
       expect(response).to have_http_status(:not_found)
+    end
+
+    it 'returns bad request response if patient id mismatch' do
+      cons = new_consultation.merge(patient_id: 'foo_bar')
+      post(
+        "/patients/#{patient.identifier}/consultations",
+        params: with_required_params(consultation: cons))
+
+      expect(response).to have_http_status(:bad_request)
     end
   end
 end
